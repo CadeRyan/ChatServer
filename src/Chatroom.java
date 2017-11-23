@@ -1,7 +1,12 @@
 public class Chatroom {
-
-	public Chatroom(String a ){
+	public int roomRef;
+	public Chatroom(String a){
 		String name = a;
-		int roomRef;
+		roomRef = assignNumber();
+	}
+	
+	private int assignNumber(){
+		Server.roomRefGlobal ++;
+		return Server.roomRefGlobal;
 	}
 }

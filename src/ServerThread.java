@@ -1,10 +1,15 @@
 import java.net.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 
 public class ServerThread extends Thread{
 	private Socket socket = null;
+	
+	private int chtrmNumber;
 
 	public ServerThread(Socket socket) {
 		super("ServerThread");
@@ -37,17 +42,31 @@ public class ServerThread extends Thread{
 				else if(inputLine.contains("JOIN_CHATROOM: ") && state == 0){
 
 					String chatroomName = actualData(inputLine);
+					String roomRef = "";
+					chtrmNumber = chatroomExists(chatroomName);
+					if(chtrmNumber > 0)
+						roomRef = "" + chtrmNumber;
+					else{
+						Chatroom new1 = new Chatroom(chatroomName);
+						Server.chatrooms.put(new1.roomRef, new1);
+					}
 					outputLine = "JOINED_CHATROOM: " + chatroomName + "\n";
+					outputLine += "SERVER_IP: 134.226.50.33\n";
+					outputLine += "PORT: 1234\n";
+					outputLine += "ROOM_REF: " + roomRef + "\n";
 					state = 1;
 				}
 				else if(inputLine.contains("CLIENT_IP: ") && state == 1)state = 2;
 				else if(inputLine.contains("PORT: ") && state == 2)state = 3;
 				else if(inputLine.contains("CLIENT_NAME: ") && state == 3){
 
-					outputLine += "SERVER_IP: 134.226.50.33\n";
-					outputLine += "PORT: 1234\n";
-					outputLine += "ROOM_REF: 1\n";
-					outputLine += "JOIN_ID: 1\n";
+					String clientName = actualData(inputLine);
+					String joinID = "";
+					int clntExists = clientExists(clientName);
+					if(clntExists > 0){
+						joinID = "" + clntExists;
+					}
+					outputLine += "JOIN_ID: " + joinID + "\n";
 					
 					state = 0;
 				}
@@ -77,6 +96,28 @@ public class ServerThread extends Thread{
 			if(b[i] == ' '){
 				active = true;
 			}
+		}
+		return res;
+	}
+	public int chatroomExists(String a){
+		int res = 0;
+		Set set = Server.chatrooms.entrySet();
+		Iterator iterator = set.iterator();
+		while(iterator.hasNext()){
+			Map.Entry mentry = (Map.Entry)iterator.next();
+			if(a.equalsIgnoreCase((String) mentry.getValue()))
+				res = (int) mentry.getKey();
+		}
+		return res;
+	}
+	public int clientExists(String a){
+		int res = 0;
+		Set set = Server.allClients.entrySet();
+		Iterator iterator = set.iterator();
+		while(iterator.hasNext()){
+			Map.Entry mentry = (Map.Entry)iterator.next();
+			if(a.equalsIgnoreCase((String) mentry.getValue()))
+				res = (int) mentry.getKey();
 		}
 		return res;
 	}
