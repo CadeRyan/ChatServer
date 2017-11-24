@@ -199,7 +199,7 @@ public class ServerThread extends Thread{
 			}
 			if(state == 11){
 				socket.close();
-				System.exit(NORM_PRIORITY);
+				//System.exit(NORM_PRIORITY);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
