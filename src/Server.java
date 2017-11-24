@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Server {
 	
 	public static HashMap<Integer, Chatroom> chatrooms = new HashMap<Integer, Chatroom>();
-	public static HashMap<Integer, Chatroom> allClients = new HashMap<Integer, Chatroom>();
+	public static HashMap<Integer, Client> allClients = new HashMap<Integer, Client>();
 	public static int roomRefGlobal = 1;
 	public static int clientJoinIDGlobal = 1;
 	public static void main(String[] args) throws IOException {

@@ -8,7 +8,7 @@ import java.io.*;
 
 public class ServerThread extends Thread{
 	private Socket socket = null;
-	
+
 	private int chtrmNumber;
 
 	public ServerThread(Socket socket) {
@@ -35,7 +35,7 @@ public class ServerThread extends Thread{
 
 				if(inputLine.contains("HELO ") && state == 0){
 					outputLine = inputLine + "\n";
-					outputLine += "IP:134.226.50.57\n";
+					outputLine += "IP:134.226.50.33\n";
 					outputLine += "Port:1234\n";
 					outputLine += "StudentID:14310841\n";
 				}
@@ -49,6 +49,8 @@ public class ServerThread extends Thread{
 					else{
 						Chatroom new1 = new Chatroom(chatroomName);
 						Server.chatrooms.put(new1.roomRef, new1);
+						roomRef = "" + new1.roomRef;
+						chtrmNumber = new1.roomRef;
 					}
 					outputLine = "JOINED_CHATROOM: " + chatroomName + "\n";
 					outputLine += "SERVER_IP: 134.226.50.33\n";
@@ -63,14 +65,26 @@ public class ServerThread extends Thread{
 					String clientName = actualData(inputLine);
 					String joinID = "";
 					int clntExists = clientExists(clientName);
+					int clientJoinID = clntExists;
 					if(clntExists > 0){
 						joinID = "" + clntExists;
 					}
+					else{
+						Client new1 = new Client(clientName);
+						Server.allClients.put(new1.joinID, new1);
+						clientJoinID = new1.joinID;
+						joinID = "" + new1.joinID;
+					}
+					Chatroom tmp = Server.chatrooms.get(chtrmNumber);
+					Client tmp2 = Server.allClients.get(clientJoinID); 
+					if(!(clientIsInChatroomAlready(tmp, tmp2))){
+						tmp.addClientToChatroom(tmp2);
+					}
 					outputLine += "JOIN_ID: " + joinID + "\n";
-					
+
 					state = 0;
 				}
-				
+
 				if(outputLine != null && state == 0) {
 					out.write(outputLine.getBytes());
 				}
@@ -120,5 +134,15 @@ public class ServerThread extends Thread{
 				res = (int) mentry.getKey();
 		}
 		return res;
+	}
+	public boolean clientIsInChatroomAlready(Chatroom a, Client b){
+
+		for(int i = 0; i < a.clients.size(); i ++){
+			if(a.clients.get(i) != null && a.clients.get(i).joinID == b.joinID){
+				System.out.println(i);
+				return true;
+			}
+		}
+		return false;
 	}
 }

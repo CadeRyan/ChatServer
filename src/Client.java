@@ -1,8 +1,10 @@
 public class Client {
 
+	public int joinID;
+	public String name;
 	public Client(String a){
-		String name = a;
-		int ClientRef = assignNumber();
+		name = a;
+		joinID = assignNumber();
 	}
 	
 	private int assignNumber(){
