@@ -1,14 +1,18 @@
+import java.net.Socket;
+
 public class Client {
 
 	public int joinID;
 	public String name;
-	public Client(String a){
-		name = a;
+	public Socket socket;
+	public Client(){
 		joinID = assignNumber();
+		name = "";
 	}
 	
 	private int assignNumber(){
 		Server.clientJoinIDGlobal ++;
+		//System.out.println(Server.clientJoinIDGlobal);
 		return Server.clientJoinIDGlobal;
 	}
 }

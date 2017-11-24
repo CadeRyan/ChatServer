@@ -1,4 +1,5 @@
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +28,13 @@ public class ServerThread extends Thread{
 			String inputLine, outputLine;
 			outputLine = null;
 			int state = 0;
+			Client thisClient = new Client();
+			String message = "";
+			boolean notification = false;
+			Chatroom currentChatroom = null;
 
 			while ((inputLine = in.readLine()) != null) {
+				
 				if(inputLine.contains("KILL_SERVICE\n")){
 					break;
 				}
@@ -70,23 +76,32 @@ public class ServerThread extends Thread{
 						joinID = "" + clntExists;
 					}
 					else{
-						Client new1 = new Client(clientName);
+						Client new1 = new Client();
+						new1.name = clientName;
+						new1.socket = socket;
 						Server.allClients.put(new1.joinID, new1);
 						clientJoinID = new1.joinID;
 						joinID = "" + new1.joinID;
 					}
 					Chatroom tmp = Server.chatrooms.get(chtrmNumber);
-					Client tmp2 = Server.allClients.get(clientJoinID); 
-					if(!(clientIsInChatroomAlready(tmp, tmp2))){
-						tmp.addClientToChatroom(tmp2);
+					thisClient = Server.allClients.get(clientJoinID); 
+					if(!(clientIsInChatroomAlready(tmp, thisClient))){
+						tmp.addClientToChatroom(thisClient);
 					}
 					outputLine += "JOIN_ID: " + joinID + "\n";
-
+					notification = true;
+					currentChatroom = tmp;
+					message = thisClient.name + " has just joined the chatroom";
 					state = 0;
 				}
 
 				if(outputLine != null && state == 0) {
 					out.write(outputLine.getBytes());
+					if(notification && currentChatroom != null){
+						notifyOtherClients(currentChatroom.clients, thisClient, message);
+						notification = false;
+						currentChatroom = null;
+					}
 				}
 			}
 			socket.close();
@@ -112,6 +127,19 @@ public class ServerThread extends Thread{
 			}
 		}
 		return res;
+	}
+	public void notifyOtherClients(ArrayList<Client> clientsInChatroom, Client b, String message){
+		
+		for(int i = 0; i < clientsInChatroom.size(); i ++){
+			//if(clientsInChatroom.get(i) != b){
+				try {
+					DataOutputStream out = new DataOutputStream(clientsInChatroom.get(i).socket.getOutputStream());
+					out.write(message.getBytes());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			//}
+		}
 	}
 	public int chatroomExists(String a){
 		int res = 0;
