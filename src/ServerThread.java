@@ -24,8 +24,8 @@ public class ServerThread extends Thread{
 				DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 				BufferedReader in = new BufferedReader(
 						new InputStreamReader(
-								socket.getInputStream()));
-				) {
+								socket.getInputStream()));) 
+		{
 			String inputLine, outputLine;
 			outputLine = null;
 			int state = 0;
@@ -45,8 +45,9 @@ public class ServerThread extends Thread{
 				}
 
 				else if(inputLine.contains("HELO ") && state == 0){
+					
 					outputLine = inputLine + "\n";
-					outputLine += "IP:134.226.50.30\n";
+					outputLine += "IP:" + InetAddress.getLocalHost().toString().substring(8) + "\n";
 					outputLine += "Port:1234\n";
 					outputLine += "StudentID:14310841\n";
 				}
@@ -178,7 +179,7 @@ public class ServerThread extends Thread{
 						out.write(outputLine.getBytes());
 					output = true;
 					if(state == 11){
-						
+
 					}
 					if(notification && currentChatroom != null){
 						notifyOtherClients(currentChatroom.clients, thisClient, message);

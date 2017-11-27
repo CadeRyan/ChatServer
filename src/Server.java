@@ -11,7 +11,7 @@ public class Server {
 	public static int clientJoinIDGlobal = 1;
 	public static void main(String[] args) throws IOException {
 
-	        int portNumber = 1234;
+	        int portNumber = Integer.parseInt(args[0]);
 	        boolean listening = true;
 	        
 	        try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
