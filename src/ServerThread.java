@@ -39,13 +39,14 @@ public class ServerThread extends Thread{
 
 			while ((inputLine = in.readLine()) != null) {
 
-				if(inputLine.contains("KILL_SERVICE\n")){
+				if(inputLine.contains("KILL_SERVICE")){
+					state = 12;
 					break;
 				}
 
-				if(inputLine.contains("HELO ") && state == 0){
+				else if(inputLine.contains("HELO ") && state == 0){
 					outputLine = inputLine + "\n";
-					outputLine += "IP:134.226.50.33\n";
+					outputLine += "IP:134.226.50.30\n";
 					outputLine += "Port:1234\n";
 					outputLine += "StudentID:14310841\n";
 				}
@@ -56,7 +57,6 @@ public class ServerThread extends Thread{
 
 					String chatroomName = actualData(inputLine);
 					String roomRef = "";
-					//System.out.println(chatroomName);
 					chtrmNumber = chatroomExists(chatroomName);
 					if(chtrmNumber > 0)
 						roomRef = "" + chtrmNumber;
@@ -80,14 +80,10 @@ public class ServerThread extends Thread{
 					String joinID = "";
 					int clntExists = clientExists(clientName);
 					int clientJoinID = clntExists;
-					if(clntExists > 0){
-						System.out.println("hi");
+					if(clntExists > 0)
 						joinID = "" + clntExists;
-					}
 					else{
-						//Client new1 = new Client();
 						thisClient.name = clientName;
-						//System.out.println(thisClient.name);
 						thisClient.socket = socket;
 						Server.allClients.put(thisClient.joinID, thisClient);
 						clientJoinID = thisClient.joinID;
@@ -151,10 +147,8 @@ public class ServerThread extends Thread{
 				}
 				else if(inputLine.contains("MESSAGE: ")&& state == 8){
 					state = 0;
-					if(clientIsInChatroomAlready(currentChatroom, Server.allClients.get(clientJoinIDChat))){
-						System.out.println("yes");
+					if(clientIsInChatroomAlready(currentChatroom, Server.allClients.get(clientJoinIDChat)))
 						notification = true;
-					}
 					outputLine += inputLine + "\n\n";
 					message = outputLine;
 					output = false;
@@ -183,8 +177,10 @@ public class ServerThread extends Thread{
 					if(output)
 						out.write(outputLine.getBytes());
 					output = true;
+					if(state == 11){
+						
+					}
 					if(notification && currentChatroom != null){
-						System.out.println(message);
 						notifyOtherClients(currentChatroom.clients, thisClient, message);
 						if(leave){
 							removeClientFromChatroom(currentChatroom, thisClient);
@@ -197,9 +193,11 @@ public class ServerThread extends Thread{
 					outputLine = "this should not be showing";
 				}
 			}
-			if(state == 11){
+			if(state == 11)
 				socket.close();
-				//System.exit(NORM_PRIORITY);
+			else if(state == 12){
+				socket.close();
+				System.exit(0);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -214,11 +212,16 @@ public class ServerThread extends Thread{
 				thisClientID = entry.getKey();
 			}
 		}
+		Client thisHereClient = Server.allClients.get(thisClientID);
 		if(thisClientID != 0){
 			Map<Integer, Chatroom> map2 = Server.chatrooms;
 			for(Map.Entry<Integer, Chatroom> entry2 : map2.entrySet()){
 				for(int i = 0; i < entry2.getValue().clients.size(); i ++){
 					if(entry2.getValue().clients.get(i).joinID == thisClientID){
+						String message = "CHAT: " + entry2.getValue().roomRef + "\n"
+								+ "CLIENT_NAME: " + thisHereClient.name + "\n"
+								+ "MESSAGE: " + thisHereClient.name + " has just left the chatroom\n\n";
+						notifyOtherClients(entry2.getValue().clients, thisHereClient, message);
 						entry2.getValue().clients.remove(i);
 					}
 				}

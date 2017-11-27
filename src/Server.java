@@ -11,11 +11,6 @@ public class Server {
 	public static int clientJoinIDGlobal = 1;
 	public static void main(String[] args) throws IOException {
 
-//	    if (args.length != 1) {
-//	        System.err.println("Usage: java KKMultiServer <port number>");
-//	        System.exit(1);
-//	    }
-
 	        int portNumber = 1234;
 	        boolean listening = true;
 	        
@@ -25,7 +20,7 @@ public class Server {
 		        }
 		    } catch (IOException e) {
 	            System.err.println("Could not listen on port " + portNumber);
-	            System.exit(-1);
+	            System.exit(0);
 	        }
 	    }
 }

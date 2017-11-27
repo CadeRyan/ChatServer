@@ -12,7 +12,6 @@ public class Client {
 	
 	private int assignNumber(){
 		Server.clientJoinIDGlobal ++;
-		//System.out.println(Server.clientJoinIDGlobal);
 		return Server.clientJoinIDGlobal;
 	}
 }
