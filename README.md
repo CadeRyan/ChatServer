@@ -65,6 +65,6 @@ The Server can be shut down completely by any Client at any time using the follo
 >KILL_SERVICE  
 ___________________________________________________________________________
 
-to run this code, navigate to the src folder using command prompt and type compile.sh to compile the program, 
+to run this code using command prompt, type compile.sh to compile the program, 
 followed by start.sh #portNumber to run it
 
