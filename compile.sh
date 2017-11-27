@@ -1,2 +1,2 @@
 cd src;
-javac Server.java;
+javac Server.java ServerThread.java Client.java Chatroom.java;
