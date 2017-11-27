@@ -1,1 +1,0 @@
-java Server $1
